@@ -2,6 +2,7 @@
 #include <cassert>
 #include "GameScene.h"
 #include "TextureManager.h"
+#include"CameraController.h"
 
 GameScene::GameScene() {}
 
@@ -9,8 +10,21 @@ GameScene::~GameScene() {
 
 	delete player_;
 	delete model_;
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			delete worldTransformBlock;
+		}
+	}
+	worldTransformBlocks_.clear();
+
+	delete debugCamera_;
+
+	delete modelSkydome_;
+
 	delete mapChipField_;
+	delete cameraController_;
 }
+
 
 void GameScene::Initialize() {
 
@@ -22,8 +36,10 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	// 3Dモデルの生成
-	model_ = Model::Create();
+	// ファイル名を指定してテクスチャを読み込む
+	//textureHandle_ = TextureManager::Load("block.jpg");
 	// 3Dモデルの生成
+	model_ = Model::Create();
 	modelSkydome_ = Model::CreateFromOBJ("sphere", true);
 	modelBlock_ = Model::CreateFromOBJ("block");
 	model_ = Model::CreateFromOBJ("player");
@@ -37,8 +53,6 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	player_->Initialize(playerPosition, &viewProjection_);
-	// マップチップ初期化
-	mapChipField_ = new MapChipField;
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
@@ -49,6 +63,7 @@ void GameScene::Initialize() {
 	////要素数(切り取り後)
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipeCsv("Resources/blokcs.csv");
+	//player_->SetMapChipField(mapChipField_);
 
 	GenerateBlocks();
 
@@ -100,7 +115,7 @@ void GameScene::Update() {
 			isDebugCameraActive_ = true;
 	}
 #endif
-
+	cameraController_->Update();
 	// カメラ処理
 	if (isDebugCameraActive_) {
 		// デバッグカメラの更新
@@ -111,10 +126,11 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	}
 	else {
+		viewProjection_.UpdateMatrix();
 		viewProjection_.matView = cameraController_->GetViewProjection().matView;
 		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
+		viewProjection_.TransferMatrix();
 	}
 
 	// 自キャラの更新
@@ -127,7 +143,13 @@ void GameScene::Update() {
 				continue;
 
 			// アフィン変換行列の作成
-			worldTransformBlockYoko->UpdateMatrix();
+			//worldTransformBlockYoko->UpdateMatrix();
+			worldTransformBlockYoko->matWorld_ =
+				MakeAffineMatrix(worldTransformBlockYoko->scale_, worldTransformBlockYoko->rotation_, worldTransformBlockYoko->translation_);
+
+			// 定数バッファに転送
+			worldTransformBlockYoko->TransferMatrix();
+
 		}
 	}
 }

@@ -5,6 +5,8 @@
 #include "WorldTransform.h"
 #include "viewProjection.h"
 #include"AABB.h"
+#include "CameraController.h"
+
 
 class MapChipField;
 
@@ -48,7 +50,7 @@ public:
 
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const Vector3& GetVelocity() const { return velocity_; }
-	// const Vector3& targetVelocity=target_->GetVelocity();
+	//const Vector3& targetVelocity=target_->GetVelocity();
 
 	/* void SetMapChipField(MapChipField*mapChipField){mapChipField_;}
 	 void mapcrash(CollisionMapInfo&info);

@@ -11,7 +11,6 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "skydome.h"
-
 #include "CameraController.h"
 
 /// <summary>
@@ -76,7 +75,7 @@ private: // メンバ変数
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
-	skydome* Skydome_;
+	skydome* Skydome_ = nullptr;
 	Model* modelSkydome_;
 
 	// マップチップフィールド
