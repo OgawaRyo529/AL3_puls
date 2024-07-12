@@ -38,5 +38,13 @@ Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2);
 float EaseInOut(float start, float end, float time);
 float Lerp(float start, float end, float time);
 Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
+Vector3 operator+(const Vector3& v);
+Vector3 operator-(const Vector3& v);
+// 2項演算子オーバーロード
+const Vector3 operator+(const Vector3& v1, const Vector3& v2);
+const Vector3 operator-(const Vector3& v1, const Vector3& v2);
+const Vector3 operator*(const Vector3& v, float s);
+const Vector3 operator*(float s, const Vector3& v);
+const Vector3 operator/(const Vector3& v, float s);
 
 //bool IsCollision(const AABB& aabb1, const AABB& aabb2);

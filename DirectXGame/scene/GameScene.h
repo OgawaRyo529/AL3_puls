@@ -1,5 +1,4 @@
 #pragma once
-#include <DebugCamera.h>
 
 #include "Audio.h"
 #include "DirectXCommon.h"
@@ -12,6 +11,9 @@
 #include "WorldTransform.h"
 #include "skydome.h"
 #include "CameraController.h"
+#include "DeathParticles.h"
+#include <DebugCamera.h>
+#include<vector>
 
 /// <summary>
 /// ゲームシーン
@@ -44,8 +46,20 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
-	void GenerateBlocks();
+	
 
+	void ChangePhase();
+
+	//デスフラグ
+	bool isDead_ = false;
+
+	//デスフラグのgetter
+	bool IsDead()const { return isDead_; }
+
+	//終了フラグ
+	bool finished_ = false;
+	//デスフラグのgetter
+	bool IsFinished() const { return finished_; }
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -57,29 +71,36 @@ private: // メンバ変数
 	/// テクスチャーハンドル
 	uint32_t textureHandle_ = 0;
 
+
+	// 自キャラ
+	Player* player_ = nullptr;
 	// 3Dモデル
 	Model* model_ = nullptr;
+	Model* modelPlayer_ = nullptr;
 	Model* modelBlock_ = nullptr;
+	skydome* Skydome_ = nullptr;
 	// ワールドトランスフォーム
 	WorldTransform wordTransform_;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
-
-	// 自キャラ
-	Player* player_ = nullptr;
 	// 縦横ブロックの配列
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
-
-	// デバッグカメラ有効
-	bool isDebugCameraActive_ = false;
+	WorldTransform worldTransformSkydome_;
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
-	skydome* Skydome_ = nullptr;
-	Model* modelSkydome_;
-
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
 	// マップチップフィールド
 	MapChipField* mapChipField_;
-
 	CameraController* cameraController_ = nullptr;
+
+	void GenerateBlocks();
+
+	Model* modelSkydome_;
+
+
+	//DeathParticles* deathParticles_ = nullptr;
+	
+
 };

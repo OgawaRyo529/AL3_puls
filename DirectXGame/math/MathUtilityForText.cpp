@@ -3,6 +3,8 @@
 #include<numbers>
 #include "MathUtilityForText.h"
 
+
+
 Vector3& operator+=(Vector3& lhv, const Vector3& rhv) {
 	lhv.x += rhv.x;
 	lhv.y += rhv.y;
@@ -122,6 +124,26 @@ Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) {
 
 	return result *= m2;
 }
+
+// 2項演算子オーバーロード
+const Vector3 operator+(const Vector3& v1, const Vector3& v2) {
+	Vector3 temp(v1);
+	return temp += v2;
+}
+const Vector3 operator-(const Vector3& v1, const Vector3& v2) {
+	Vector3 temp(v1);
+	return temp -= v2;
+}
+const Vector3 operator*(const Vector3& v, float s) {
+	Vector3 temp(v);
+	return temp *= s;
+}
+const Vector3 operator*(float s, const Vector3& v) { return v * s; }
+const Vector3 operator/(const Vector3& v, float s) {
+	Vector3 temp(v);
+	return temp /= s;
+}
+
 
 float EaseInOut(float start, float end, float time) {
 	float easedT = -(std::cosf(std::numbers::pi_v<float> *time) - 1.0f) / 2.0f;

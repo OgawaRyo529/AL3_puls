@@ -18,26 +18,38 @@ struct  MapChipData {
 	std::vector<std::vector<MapChipType>>data;
 };
 
-struct IndexSet {
-	uint32_t xIndex;
-	uint32_t yIndex;
-};
+
 
 class MapChipField{
 public:
+	//1ブロックのサイズ
+	static inline const float kBlockWidth = 1.0f;
+	static inline const float kBlockHeight = 1.0f;
+	struct IndexSet {
+
+		uint32_t xIndex;
+		uint32_t yIndex;
+	};
+	struct Rect{
+		float left;
+		float right;
+		float bottom;
+		float top;
+	};
+	
 	void ResetMapChipData();
-	void LoadMapChipeCsv(const std::string& filePath);
-	 MapChipType GetMapChipTypeByIndex(uint32_t xIndex,uint32_t yIndex);
+	void LoadMapChipCsv(const std::string& filePath);
 	 Vector3 GetMapChipPositionByIndex(uint32_t xIndex,uint32_t yIndex);
-	 int32_t GetNumBlockVirtical();
-	 uint32_t GetNumBlockHorizontal();
-	//IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
+	 MapChipType GetMapChipTypeByIndex(uint32_t xIndex,uint32_t yIndex);
+	 MapChipType GetMapChipTypeByPosition(const Vector3& position);
+	 IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
+	 int32_t GetNumBlockVirtical()const { return kNumBlockVirtical; }
+	 uint32_t GetNumBlockHorizontal()const { return kNumBlockHorizontal; }
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
 
 private:
 
-	//1ブロックのサイズ
-	static inline const float kBlockWidth=1.0f;
-	static inline const float kBlockHeight=1.0f;
+	
 
 	//ブロックの個数
 	static inline  const uint32_t kNumBlockVirtical = 20;
