@@ -98,7 +98,7 @@ void Player::InputMove() {
 
 			}
 			// 加速/減速
-			velocity_.x += acceleration.x;
+			velocity_+= acceleration;
 			// 最大速度制限
 			velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
 			
@@ -257,7 +257,7 @@ void Player::InputMove() {
 		//真上の当たり判定
 		bool hit = false;
 
-		//左上点
+		//右上点
 		MapChipField::IndexSet indexSet;
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRighTop]);
 		mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
@@ -266,7 +266,7 @@ void Player::InputMove() {
 		if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
 			hit = true;
 		}
-		//右上点
+		//右下点
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRighBottom]);
 		mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 		mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex-1, indexSet.yIndex);
@@ -278,7 +278,7 @@ void Player::InputMove() {
 			//現在座標が壁の外か判定
 			MapChipField::IndexSet  indexSetNow;
 			indexSetNow = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3( +kWidth / 2.0f, 0,0));
-			if (indexSetNow.yIndex != indexSet.yIndex) {
+			if (indexSetNow.xIndex != indexSet.xIndex) {
 				indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_+ info.move + Vector3( +kWidth / 2.0f, 0,0));
 				MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
 				info.move.x = std::max(0.0f, rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
@@ -323,10 +323,10 @@ void Player::InputMove() {
 			//現在座標が壁の外か判定
 			MapChipField::IndexSet  indexSetNow;
 			indexSetNow = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3( -kWidth / 2.0f, 0,0));
-			if (indexSetNow.yIndex != indexSet.yIndex) {
+			if (indexSetNow.xIndex != indexSet.xIndex) {
 				indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0,0));
 				MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-				info.move.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (kWidth / 2.0f + kBlank));
+				info.move.x = std::min(0.0f, rect.right - worldTransform_.translation_.x + (kWidth / 2.0f + kBlank));
 				info.wall = true;
 			}
 		}
@@ -359,7 +359,7 @@ void Player::InputMove() {
 					ground = true;
 				}
 				if (!ground) {
-					DebugText::GetInstance()->ConsolePrintf("jamp");
+					DebugText::GetInstance()->ConsolePrintf("jump");
 					onGround_ = false;
 				}
 			}
