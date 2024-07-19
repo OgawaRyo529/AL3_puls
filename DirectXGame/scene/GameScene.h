@@ -2,6 +2,7 @@
 
 #include "Audio.h"
 #include "DirectXCommon.h"
+#include"Enemy.h"
 #include "Input.h"
 #include "MapChipField.h"
 #include "Model.h"
@@ -80,6 +81,7 @@ private: // メンバ変数
 	Model* modelPlayer_ = nullptr;
 	Model* modelBlock_ = nullptr;
 	skydome* Skydome_ = nullptr;
+	Model* modelEnemy_ = nullptr;
 	// ワールドトランスフォーム
 	WorldTransform wordTransform_;
 	// ビュープロジェクション
@@ -99,6 +101,7 @@ private: // メンバ変数
 	MapChipField* mapChipField_=nullptr;
 	CameraController* cameraController = nullptr;
 
+	Enemy* enemy_ = nullptr;
 	
 
 

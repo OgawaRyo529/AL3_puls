@@ -19,6 +19,7 @@ GameScene::~GameScene() {
 	}
 	worldTransformBlocks_.clear();
 
+	delete modelEnemy_;
 	delete modelPlayer_;
 	delete modelBlock_;
 	delete debugCamera_;
@@ -43,6 +44,7 @@ void GameScene::Initialize() {
 	// 3Dモデルの生成
 	model_ = Model::Create();
 	modelSkydome_ = Model::CreateFromOBJ("sphere", true);
+	modelEnemy_ = Model::CreateFromOBJ("enemy");
 	modelBlock_ = Model::CreateFromOBJ("block");
 	modelPlayer_ = Model::CreateFromOBJ("player");
 
@@ -79,38 +81,14 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = { 12.0f, 100 - 12.0f, 6.0f, 6.0f };
 	cameraController->SetMovableArea(cameraArea);
 
-	//player_->SetMapChipField(mapChipField_);
+	enemy_ = new Enemy();
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14, 28);
+	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 
 	//deathParticles_ = new DeathParticles;
 	//deathParticles_->Initialize(modeDeath_, &viewProjection_,&objectColor_);
 }
-void GameScene::GenerateBlocks() {
 
-	// 要素数
-	uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
-	uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
-	// ブロック1個分の横幅
-	//const float kBlockWidth = 2.0f;
-	//const float kBlockHeight = 2.0f;
-	// 要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockHorizontal);
-
-	// キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	}
-
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
-				WorldTransform* worldTransform = new WorldTransform();
-				worldTransform->Initialize();
-				worldTransformBlocks_[i][j] = worldTransform;
-				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
-			}
-		}
-	}
-}
 
 //void GameScene::ChangePhase() {
 //	switch (phase_)
@@ -153,6 +131,7 @@ void GameScene::Update() {
 	}
 	// 自キャラの更新
 	player_->Update();
+	enemy_->Update();
 	Skydome_->Update();
 
 	
@@ -213,6 +192,7 @@ void GameScene::Draw() {
 	}
 	player_->Draw();
 
+	enemy_->Draw();
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -229,4 +209,31 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+void GameScene::GenerateBlocks() {
+
+	// 要素数
+	uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+	// ブロック1個分の横幅
+	//const float kBlockWidth = 2.0f;
+	//const float kBlockHeight = 2.0f;
+	// 要素数を変更する
+	worldTransformBlocks_.resize(kNumBlockHorizontal);
+
+	// キューブの生成
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
 }

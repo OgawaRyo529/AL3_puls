@@ -113,6 +113,7 @@
     <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="DeathObject.cpp" />
     <ClCompile Include="DeathParticles.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
     <ClCompile Include="math\MathUtilityForText.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="CameraController.h" />
     <ClInclude Include="DeathObject.h" />
     <ClInclude Include="DeathParticles.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="MapChipField.h" />
     <ClInclude Include="math\MathUtilityForText.h" />
