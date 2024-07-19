@@ -24,7 +24,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete modelSkydome_;
 	delete mapChipField_;
-	delete cameraController_;
+	delete cameraController;
 }
 
 
@@ -46,9 +46,6 @@ void GameScene::Initialize() {
 	modelBlock_ = Model::CreateFromOBJ("block");
 	modelPlayer_ = Model::CreateFromOBJ("player");
 
-	///要素数(切り取り後)
-	mapChipField_ = new MapChipField;
-	mapChipField_->LoadMapChipCsv("Resources/blokcs.csv");
 	// mapChipField_->LoadMap
 	// ワールドトランスフォームの初期化
 	wordTransform_.Initialize();
@@ -59,7 +56,6 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 16);
 	player_->Initialize(modelPlayer_ , &viewProjection_, playerPosition);
-	player_->SetMapChipField(mapChipField_);
 
 	viewProjection_.Initialize();
 	// デバッグカメラの生成
@@ -67,21 +63,53 @@ void GameScene::Initialize() {
 
 	Skydome_ = new skydome();
 	Skydome_->Initialize(modelSkydome_, &viewProjection_);
+	///要素数(切り取り後)
+	mapChipField_ = new MapChipField;
+	mapChipField_->LoadMapChipCsv("Resources/blokcs.csv");
+
+	player_->SetMapChipField(mapChipField_);
 
 	GenerateBlocks();
 
-	cameraController_ = new CameraController;
-	cameraController_->Initialize();
-	cameraController_->SetTarget(player_);
-	cameraController_->Reset();
+	cameraController = new CameraController;
+	cameraController->Initialize();
+	cameraController->SetTarget(player_);
+	cameraController->Reset();
 
 	CameraController::Rect cameraArea = { 12.0f, 100 - 12.0f, 6.0f, 6.0f };
-	cameraController_->SetMovableArea(cameraArea);
+	cameraController->SetMovableArea(cameraArea);
 
 	//player_->SetMapChipField(mapChipField_);
 
 	//deathParticles_ = new DeathParticles;
 	//deathParticles_->Initialize(modeDeath_, &viewProjection_,&objectColor_);
+}
+void GameScene::GenerateBlocks() {
+
+	// 要素数
+	uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+	// ブロック1個分の横幅
+	//const float kBlockWidth = 2.0f;
+	//const float kBlockHeight = 2.0f;
+	// 要素数を変更する
+	worldTransformBlocks_.resize(kNumBlockHorizontal);
+
+	// キューブの生成
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
 }
 
 //void GameScene::ChangePhase() {
@@ -96,20 +124,17 @@ void GameScene::Initialize() {
 //}
 
 void GameScene::Update() {
-	// 自キャラの更新
-	player_->Update();
-	Skydome_->Update();
 
-	cameraController_->Update();
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_SPACE)) {
-		isDebugCameraActive_ = !isDebugCameraActive_;
-		/*if (isDebugCameraActive_ == true)
+		//isDebugCameraActive_ = !isDebugCameraActive_;
+		if (isDebugCameraActive_ == true)
 			isDebugCameraActive_ = false;
 		else
-			isDebugCameraActive_ = true;*/
+			isDebugCameraActive_ = true;
 	}
 #endif
+	cameraController->Update();
 	// カメラ処理
 	if (isDebugCameraActive_) {
 		// デバッグカメラの更新
@@ -120,12 +145,15 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	}
 	else {
-		viewProjection_.matView = cameraController_->GetViewProjection().matView;
-		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
+		viewProjection_.UpdateMatrix();
+		viewProjection_.matView = cameraController->GetViewProjection().matView;
+		viewProjection_.matProjection = cameraController->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の更新と転送
-		//viewProjection_.UpdateMatrix();
 		viewProjection_.TransferMatrix();
 	}
+	// 自キャラの更新
+	player_->Update();
+	Skydome_->Update();
 
 	
 	// ブロック更新
@@ -135,7 +163,7 @@ void GameScene::Update() {
 				continue;
 
 			// アフィン変換行列の作成
-			//worldTransformBlockYoko->UpdateMatrix();
+			worldTransformBlockYoko->UpdateMatrix();
 			worldTransformBlockYoko->matWorld_ =
 				MakeAffineMatrix(worldTransformBlockYoko->scale_, worldTransformBlockYoko->rotation_, worldTransformBlockYoko->translation_);
 
@@ -173,17 +201,17 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	// 自キャラの描画
-	player_->Draw();
 	Skydome_->Draw();
 	// 縦横ブロック描画
-	for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlockYoko : worldTransformBlockTate) {
+	for (std::vector<WorldTransform*> &worldTransformBlockTate : worldTransformBlocks_) {
+		for (WorldTransform*& worldTransformBlockYoko : worldTransformBlockTate) {
 			if (!worldTransformBlockYoko)
 				continue;
 
 			modelBlock_->Draw(*worldTransformBlockYoko, viewProjection_);
 		}
 	}
+	player_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -201,31 +229,4 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
-}
-void GameScene::GenerateBlocks() {
-
-	// 要素数
-	const uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
-	const uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
-	// ブロック1個分の横幅
-	/*const float kBlockWidth = 2.0f;
-	const float kBlockHeight = 2.0f;*/
-	// 要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockHorizontal);
-
-	// キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	}
-
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
-				WorldTransform* worldTransform = new WorldTransform();
-				worldTransform->Initialize();
-				worldTransformBlocks_[i][j] = worldTransform;
-				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
-			}
-		}
-	}
 }

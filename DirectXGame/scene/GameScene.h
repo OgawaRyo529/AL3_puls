@@ -46,9 +46,10 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
-	
+	void GenerateBlocks();
 
-	void ChangePhase();
+
+	//void ChangePhase();
 
 	//デスフラグ
 	bool isDead_ = false;
@@ -86,18 +87,20 @@ private: // メンバ変数
 	// 縦横ブロックの配列
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	WorldTransform worldTransformSkydome_;
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
-	// デバッグカメラ有効
-	bool isDebugCameraActive_ = false;
-	// マップチップフィールド
-	MapChipField* mapChipField_;
-	CameraController* cameraController_ = nullptr;
 
-	void GenerateBlocks();
-
+	skydome* skydome_ = nullptr;
 	Model* modelSkydome_;
+	// マップチップフィールド
+	MapChipField* mapChipField_=nullptr;
+	CameraController* cameraController = nullptr;
+
+	
+
 
 
 	//DeathParticles* deathParticles_ = nullptr;
