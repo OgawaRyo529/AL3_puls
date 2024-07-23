@@ -51,6 +51,34 @@ void Player::Update() {
 void Player::Draw() {
 	{ model_->Draw(worldTransform_, *viewProjection_); }
 };
+Vector3 Player::GetWorldPosition() {
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+AABB Player::GetAABB() {
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+
+	aabb.min = { worldPos.x - kWidth / 2.0f,worldPos.y - kHeight / 2.0f,worldPos.z - kWidth / 2.0f };
+
+	aabb.max = { worldPos.x + kWidth / 2.0f,worldPos.y + kHeight / 2.0f,worldPos.z - kWidth / 2.0f };
+
+	return aabb;
+}
+
+void Player::OnCollision(const Enemy* enemy) {
+	(void)enemy;
+
+	velocity_ += Vector3(0, kJumpAcceleration / 60.0f, 0);
+}
+
 void Player::InputMove() {
 
 
@@ -102,21 +130,7 @@ void Player::InputMove() {
 			// 最大速度制限
 			velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
 			
-			//if (acceleration.x >= 0.01f || acceleration.x <= -0.01f) {
-			//	acceleration.x = 0;
-			//}
-
-			//if (turnTimer_ > 0.0f) {
-			//	// タイマーのカウントダウン
-			//	turnTimer_ -= 1.0f / 60.0f;
-
-			//	// 左右の自キャラ角度テーブル
-			//	float destinationRotationYTable[] = { std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> *3.0f / 2.0f };
-			//	// 状態に応じた角度を取得する
-			//	float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
-			//	// 自キャラの角度を設定する
-			//	worldTransform_.rotation_.y = EaseInOut(destinationRotationY, turnFirstRotationY_, EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_));
-			//}
+			
 		}
 		else {
 			// 非入力時は移動減衰をかける

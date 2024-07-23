@@ -13,6 +13,7 @@
 #include "skydome.h"
 #include "CameraController.h"
 #include "DeathParticles.h"
+#include<list>
 #include <DebugCamera.h>
 #include<vector>
 
@@ -49,6 +50,7 @@ public: // メンバ関数
 
 	void GenerateBlocks();
 
+	void CheckAllCollisions();
 
 	//void ChangePhase();
 
@@ -95,16 +97,16 @@ private: // メンバ変数
 	DebugCamera* debugCamera_ = nullptr;
 
 
-	skydome* skydome_ = nullptr;
-	Model* modelSkydome_;
+	
+	Model* modelSkydome_=nullptr;
 	// マップチップフィールド
 	MapChipField* mapChipField_=nullptr;
 	CameraController* cameraController = nullptr;
 
-	Enemy* enemy_ = nullptr;
+	//Enemy* enemy_ = nullptr;
 	
 
-
+	std::list<Enemy*>enemies_;
 
 	//DeathParticles* deathParticles_ = nullptr;
 	

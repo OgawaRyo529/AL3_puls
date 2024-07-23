@@ -8,7 +8,9 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 	delete player_;
 	delete model_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -81,9 +83,11 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = { 12.0f, 100 - 12.0f, 6.0f, 6.0f };
 	cameraController->SetMovableArea(cameraArea);
 
-	enemy_ = new Enemy();
+	Enemy*newEnemy= new Enemy();
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14, 28);
-	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+	newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+
+	enemies_.push_back(newEnemy);
 
 	//deathParticles_ = new DeathParticles;
 	//deathParticles_->Initialize(modeDeath_, &viewProjection_,&objectColor_);
@@ -131,7 +135,11 @@ void GameScene::Update() {
 	}
 	// 自キャラの更新
 	player_->Update();
-	enemy_->Update();
+
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+	//enemy_->Update();
 	Skydome_->Update();
 
 	
@@ -151,6 +159,7 @@ void GameScene::Update() {
 
 		}
 	}
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -191,8 +200,9 @@ void GameScene::Draw() {
 		}
 	}
 	player_->Draw();
-
-	enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -236,4 +246,28 @@ void GameScene::GenerateBlocks() {
 			}
 		}
 	}
+}
+
+void GameScene::CheckAllCollisions() {
+	//判定対象1と2の座標
+	AABB aabb1, aabb2;
+
+#pragma region 
+	//自キャラと敵キャラの当たり判定
+	{
+		aabb1 = player_->GetAABB();
+
+		for (Enemy* enemy : enemies_) {
+
+			aabb2 = enemy->GetAABB();
+
+			if (IsCollision(aabb1, aabb2)) {
+
+				player_->OnCollision(enemy);
+
+				enemy->OnCollision(player_);
+			}
+		}
+	}
+#pragma endregion
 }

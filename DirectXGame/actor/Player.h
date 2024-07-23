@@ -1,4 +1,5 @@
 #pragma once
+#include"AABB.h"
 #include "Model.h"
 #include "Vector3.h"
 #include "WorldTransform.h"
@@ -8,6 +9,7 @@
 
 
 class MapChipField;
+class Enemy;
 
 class Player {
 public:
@@ -44,12 +46,17 @@ public:
 
 	void Draw();
 
+	//ワールド座標取得
+	Vector3 GetWorldPosition();
+
+	AABB GetAABB();
+
+	void OnCollision(const Enemy* enemy);
 	//const Vector3& targetVelocity=target_->GetVelocity();
 
 	 void SetMapChipField(MapChipField*mapChipField){mapChipField_=mapChipField;}
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const Vector3& GetVelocity() const { return velocity_; }
-	AABB GetAABB();
 
 private:
 	static inline const float kAcceleration = 0.1f;
