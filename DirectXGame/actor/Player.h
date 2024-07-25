@@ -57,6 +57,7 @@ public:
 	 void SetMapChipField(MapChipField*mapChipField){mapChipField_=mapChipField;}
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const Vector3& GetVelocity() const { return velocity_; }
+	bool IsDead()const { return isDead_; }
 
 private:
 	static inline const float kAcceleration = 0.1f;
@@ -103,6 +104,8 @@ private:
 	// テクスチャーハンドル
 	uint32_t textureHandle_ = 0u;
 	
+	bool isDead_ = false;
+
 
 	void InputMove();
 	void CheckMapCollision(CollisionMapInfo&info);

@@ -48,3 +48,5 @@ const Vector3 operator*(float s, const Vector3& v);
 const Vector3 operator/(const Vector3& v, float s);
 
 bool IsCollision(const AABB& aabb1, const AABB& aabb2);
+
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);

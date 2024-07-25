@@ -52,7 +52,12 @@ public: // メンバ関数
 
 	void CheckAllCollisions();
 
-	//void ChangePhase();
+	void ChangePhase();
+
+
+	void UpdateCamera();
+
+	void UpdateBlocks();
 
 	//デスフラグ
 	bool isDead_ = false;
@@ -65,6 +70,13 @@ public: // メンバ関数
 	//デスフラグのgetter
 	bool IsFinished() const { return finished_; }
 private: // メンバ変数
+
+	enum class Phase {
+		kPlay,
+		kDeath,
+
+	};
+
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
@@ -84,6 +96,7 @@ private: // メンバ変数
 	Model* modelBlock_ = nullptr;
 	skydome* Skydome_ = nullptr;
 	Model* modelEnemy_ = nullptr;
+	Model* modelDeathParticles_ = nullptr;
 	// ワールドトランスフォーム
 	WorldTransform wordTransform_;
 	// ビュープロジェクション
@@ -108,7 +121,7 @@ private: // メンバ変数
 
 	std::list<Enemy*>enemies_;
 
-	//DeathParticles* deathParticles_ = nullptr;
+	DeathParticles* deathParticles_ = nullptr;
 	
-
+	Phase phase_;
 };
