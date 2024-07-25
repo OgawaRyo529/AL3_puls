@@ -12,6 +12,7 @@
 enum  MapChipType{
 	kBlank,
 	kBlock,
+   
 
 };
 struct  MapChipData {
