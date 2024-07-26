@@ -68,8 +68,7 @@ void GameScene::Initialize() {
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 
-	//Skydome_ = new skydome();
-	//Skydome_->Initialize(modelSkydome_, &viewProjection_);
+	
 	worldTransformSkydome_.Initialize();
 	///要素数(切り取り後)
 	mapChipField_ = new MapChipField;
@@ -95,20 +94,20 @@ void GameScene::Initialize() {
 
 	phase_ = Phase::kPlay;
 
-	deathParticles_ = new DeathParticles;
-	deathParticles_->Initialize(modelDeathParticles_, &viewProjection_,playerPosition);
+	/*deathParticles_ = new DeathParticles;
+	deathParticles_->Initialize(modelDeathParticles_, &viewProjection_,playerPosition);*/
 }
 
 
 
 void GameScene::Update() {
-	//ChangePhase();
-	//	switch (phase_)
-	//	{
-	//	case Phase::kPlay:
+	ChangePhase();
+		switch (phase_)
+		{
+		case Phase::kPlay:
 		worldTransformSkydome_.UpdateMatrix();
-	//		//自キャラ
-	//		//Skydome_->Update();
+			//自キャラ
+			//Skydome_->Update();
 			player_->Update();
 			cameraController->Update();
 
@@ -117,53 +116,31 @@ void GameScene::Update() {
 			}
 			UpdateCamera();
 
-		UpdateBlocks();
+			UpdateBlocks();
 
-		CheckAllCollisions();
-	//		break;
-	//	case Phase::kDeath:
-	//		worldTransformSkydome_.UpdateMatrix();
+			CheckAllCollisions();
+			break;
+		case Phase::kDeath:
+			if (deathParticles_ && deathParticles_->IsFinished()) {
+				finished_ = true;
+			}
 
-	//		for (Enemy* enemy : enemies_) {
-	//			enemy->Update();
-	//		}
+			worldTransformSkydome_.UpdateMatrix();
+
+			for (Enemy* enemy : enemies_) {
+				enemy->Update();
+			}
 
 			if (deathParticles_) {
 				deathParticles_->Update();
 			}
-	//		UpdateCamera();
-	//		break;
-	//	}
+			UpdateCamera();
+			break;
+		}
 	
 
 
 
-	// 自キャラの更新
-	/*player_->Update();
-
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
-	}*/
-	//enemy_->Update();
-
-	
-	// ブロック更新
-	//for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
-	//	for (WorldTransform* worldTransformBlockYoko : worldTransformBlockTate) {
-	//		if (!worldTransformBlockYoko)
-	//			continue;
-
-	//		// アフィン変換行列の作成
-	//		worldTransformBlockYoko->UpdateMatrix();
-	//		worldTransformBlockYoko->matWorld_ =
-	//			MakeAffineMatrix(worldTransformBlockYoko->scale_, worldTransformBlockYoko->rotation_, worldTransformBlockYoko->translation_);
-
-	//		// 定数バッファに転送
-	//		worldTransformBlockYoko->TransferMatrix();
-
-	//	}
-	//}
-	//CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -280,7 +257,7 @@ void GameScene::GenerateBlocks() {
 
 void GameScene::UpdateCamera() {
 #ifdef _DEBUG
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->TriggerKey(DIK_A)) {
 		//isDebugCameraActive_ = !isDebugCameraActive_;
 		if (isDebugCameraActive_ == true)
 			isDebugCameraActive_ = false;

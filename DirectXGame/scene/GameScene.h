@@ -66,7 +66,6 @@ public: // メンバ関数
 	bool IsDead()const { return isDead_; }
 
 	//終了フラグ
-	bool finished_ = false;
 	//デスフラグのgetter
 	bool IsFinished() const { return finished_; }
 private: // メンバ変数
@@ -124,4 +123,5 @@ private: // メンバ変数
 	DeathParticles* deathParticles_ = nullptr;
 	
 	Phase phase_;
+	bool finished_ = false;
 };
